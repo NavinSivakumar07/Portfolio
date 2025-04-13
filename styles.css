@@ -183,3 +183,56 @@ footer {
     background-color: #219d53; 
     transform: scale(1.05);
 }
+/* Experience Section */
+#experience {
+    padding: 50px 0;
+    background-color: #f9f9f9;
+}
+
+.timeline {
+    position: relative;
+    margin-top: 30px;
+}
+
+.event {
+    margin-bottom: 40px;
+    padding: 20px;
+    background-color: #ecf0f1;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease-in-out;
+}
+
+.event:hover {
+    transform: scale(1.02);
+}
+
+.event-details h3 {
+    margin-top: 0;
+    color: #3498db;
+    font-size: 1.5em;
+    font-weight: 700;
+}
+
+.event-details p {
+    margin-bottom: 10px;
+    font-weight: bold;
+    color: #2c3e50;
+}
+
+.event-details ul {
+    list-style-type: disc;
+    padding-left: 20px;
+    margin-top: 10px;
+}
+
+.event-details ul li {
+    margin-bottom: 8px;
+    line-height: 1.6;
+    font-size: 1em;
+    color: #333;
+}
+
+.event-details ul li strong {
+    color: #2c3e50;
+}
