@@ -1,227 +1,269 @@
-// Typing animation for the hero section
-const typingLines = [
-    'Data Science Grad',
-    'AI/ML Engineer | Data Analyst | Problem Solver'
-];
-let typingLineIndex = 0;
-let typingCharIndex = 0;
-let typingIsDeleting = false;
-let typingDelay = 100;
-let typingPause = 1200;
-const typingTextEl = document.getElementById('typing-text');
-const typingCursorEl = document.querySelector('.typing-cursor');
+// ===================================
+// Smooth Scroll & Navigation
+// ===================================
+document.addEventListener('DOMContentLoaded', function () {
 
-function typeHero() {
-    const currentLine = typingLines[typingLineIndex];
-    if (typingIsDeleting) {
-        typingTextEl.textContent = currentLine.substring(0, typingCharIndex - 1);
-        typingCharIndex--;
-    } else {
-        typingTextEl.textContent = currentLine.substring(0, typingCharIndex + 1);
-        typingCharIndex++;
-    }
-
-    if (!typingIsDeleting && typingCharIndex === currentLine.length) {
-        typingIsDeleting = true;
-        setTimeout(typeHero, typingPause);
-        return;
-    } else if (typingIsDeleting && typingCharIndex === 0) {
-        typingIsDeleting = false;
-        typingLineIndex = (typingLineIndex + 1) % typingLines.length;
-    }
-    setTimeout(typeHero, typingIsDeleting ? 60 : typingDelay);
-}
-
-window.addEventListener('DOMContentLoaded', () => {
-    if (typingTextEl && typingCursorEl) {
-        typeHero();
-    }
-});
-
-// Initialize AOS (Animate On Scroll)
-AOS.init({
-    duration: 1000,
-    once: true
-});
-
-// Smooth scrolling for navigation links
-document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-    anchor.addEventListener('click', function (e) {
-        e.preventDefault();
-        const targetId = this.getAttribute('href');
-        const targetElement = document.querySelector(targetId);
-        
-        if (targetElement) {
-            const headerOffset = 80; // Adjust this value based on your header height
-            const elementPosition = targetElement.getBoundingClientRect().top;
-            const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
-
-            window.scrollTo({
-                top: offsetPosition,
-                behavior: 'smooth'
-            });
-        }
-    });
-});
-
-// Navbar scroll effect
-const nav = document.querySelector('nav');
-window.addEventListener('scroll', () => {
-    if (window.scrollY > 100) {
-        nav.style.background = 'rgba(255, 255, 255, 0.95)';
-        nav.style.boxShadow = '0 2px 10px rgba(0, 0, 0, 0.1)';
-    } else {
-        nav.style.background = 'rgba(255, 255, 255, 0.95)';
-        nav.style.boxShadow = 'none';
-    }
-});
-
-// Project filter functionality
-const filterButtons = document.querySelectorAll('.filter-btn');
-const projectCards = document.querySelectorAll('.project-card');
-
-filterButtons.forEach(button => {
-    button.addEventListener('click', () => {
-        // Remove active class from all buttons
-        filterButtons.forEach(btn => btn.classList.remove('active'));
-        // Add active class to clicked button
-        button.classList.add('active');
-        
-        const filter = button.getAttribute('data-filter');
-        
-        projectCards.forEach(card => {
-            if (filter === 'all' || card.getAttribute('data-category') === filter) {
-                card.style.display = 'block';
-            } else {
-                card.style.display = 'none';
+    // Smooth scroll for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                window.scrollTo({ top: target.offsetTop - 80, behavior: 'smooth' });
             }
         });
     });
+
+    // Active navigation highlighting
+    const sections = document.querySelectorAll('section, header');
+    const navLinks = document.querySelectorAll('.nav-link');
+
+    function highlightNavigation() {
+        let current = '';
+        sections.forEach(section => {
+            const sectionTop = section.offsetTop - 150;
+            if (window.pageYOffset >= sectionTop) {
+                current = section.getAttribute('id');
+            }
+        });
+        navLinks.forEach(link => {
+            link.classList.remove('active');
+            if (link.getAttribute('href') === `#${current}`) {
+                link.classList.add('active');
+            }
+        });
+    }
+
+    window.addEventListener('scroll', highlightNavigation);
+    highlightNavigation();
+
+    // ===================================
+    // Navbar Scroll Effect
+    // ===================================
+    const navbar = document.querySelector('.navbar');
+
+    window.addEventListener('scroll', () => {
+        if (window.pageYOffset > 100) {
+            navbar.style.background = 'rgba(10, 10, 15, 0.97)';
+            navbar.style.boxShadow = '0 4px 20px rgba(0, 0, 0, 0.3)';
+        } else {
+            navbar.style.background = 'rgba(10, 10, 15, 0.8)';
+            navbar.style.boxShadow = 'none';
+        }
+    });
+
+    // ===================================
+    // Mobile Menu Toggle
+    // ===================================
+    const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
+    const navLinksContainer = document.querySelector('.nav-links');
+
+    if (mobileMenuToggle) {
+        mobileMenuToggle.addEventListener('click', () => {
+            navLinksContainer.classList.toggle('active');
+            mobileMenuToggle.classList.toggle('active');
+        });
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', () => {
+                navLinksContainer.classList.remove('active');
+                mobileMenuToggle.classList.remove('active');
+            });
+        });
+    }
+
+    // ===================================
+    // Scroll Animations (Intersection Observer)
+    // ===================================
+    const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -80px 0px'
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.style.opacity = '1';
+                entry.target.style.transform = 'translateY(0)';
+            }
+        });
+    }, observerOptions);
+
+    const animatedElements = document.querySelectorAll(
+        '.project-card, .skill-category, .timeline-item, .expertise-item, .contact-card'
+    );
+
+    animatedElements.forEach((el, index) => {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(30px)';
+        el.style.transition = `opacity 0.6s ease ${index * 0.08}s, transform 0.6s ease ${index * 0.08}s`;
+        observer.observe(el);
+    });
+
+    // ===================================
+    // Skill Progress Bar Animation
+    // ===================================
+    const skillBars = document.querySelectorAll('.skill-progress');
+    const skillObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const targetWidth = entry.target.style.width;
+                entry.target.style.width = '0';
+                setTimeout(() => { entry.target.style.width = targetWidth; }, 150);
+                skillObserver.unobserve(entry.target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    skillBars.forEach(bar => skillObserver.observe(bar));
+
+    // ===================================
+    // Stats Counter Animation
+    // ===================================
+    const statNumbers = document.querySelectorAll('.stat-number');
+    const statsObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const target = entry.target;
+                const finalValue = target.textContent;
+                const isDecimal = finalValue.includes('.');
+                const hasPlus = finalValue.includes('+');
+                const numValue = parseFloat(finalValue);
+
+                if (!isNaN(numValue)) {
+                    const duration = 2000;
+                    const steps = 60;
+                    const increment = numValue / steps;
+                    let current = 0;
+
+                    const timer = setInterval(() => {
+                        current += increment;
+                        if (current >= numValue) {
+                            target.textContent = finalValue;
+                            clearInterval(timer);
+                        } else {
+                            target.textContent = isDecimal
+                                ? current.toFixed(2)
+                                : Math.floor(current) + (hasPlus ? '+' : '');
+                        }
+                    }, duration / steps);
+                }
+                statsObserver.unobserve(target);
+            }
+        });
+    }, { threshold: 0.5 });
+
+    statNumbers.forEach(stat => statsObserver.observe(stat));
+
+    // ===================================
+    // Project Card 3D Tilt Effect
+    // ===================================
+    const projectCards = document.querySelectorAll('.project-card');
+
+    projectCards.forEach(card => {
+        card.addEventListener('mousemove', (e) => {
+            const rect = card.getBoundingClientRect();
+            const x = e.clientX - rect.left;
+            const y = e.clientY - rect.top;
+            const centerX = rect.width / 2;
+            const centerY = rect.height / 2;
+            const rotateX = (y - centerY) / 20;
+            const rotateY = (centerX - x) / 20;
+            card.style.transform = `perspective(1000px) rotateX(${rotateX}deg) rotateY(${rotateY}deg) translateY(-8px)`;
+        });
+
+        card.addEventListener('mouseleave', () => {
+            card.style.transform = 'perspective(1000px) rotateX(0) rotateY(0) translateY(0)';
+            card.style.transition = 'transform 0.5s ease';
+        });
+
+        card.addEventListener('mouseenter', () => {
+            card.style.transition = 'transform 0.1s ease, border-color 0.3s ease, box-shadow 0.3s ease';
+        });
+    });
+
+    // ===================================
+    // Cursor Trail Effect (Desktop only)
+    // ===================================
+    if (window.innerWidth > 768) {
+        const coords = { x: 0, y: 0 };
+
+        for (let i = 0; i < 20; i++) {
+            const circle = document.createElement('div');
+            circle.className = 'cursor-circle';
+            circle.style.cssText = `
+                position: fixed;
+                width: 8px; height: 8px;
+                border-radius: 50%;
+                background: linear-gradient(135deg, #8B5CF6, #3B82F6);
+                pointer-events: none;
+                z-index: 9999;
+                opacity: 0;
+                left: 0; top: 0;
+            `;
+            document.body.appendChild(circle);
+        }
+
+        const cursorCircles = document.querySelectorAll('.cursor-circle');
+
+        window.addEventListener('mousemove', (e) => {
+            coords.x = e.clientX;
+            coords.y = e.clientY;
+        });
+
+        function animateCircles() {
+            let x = coords.x;
+            let y = coords.y;
+
+            cursorCircles.forEach((circle, index) => {
+                circle.style.left = x - 4 + 'px';
+                circle.style.top = y - 4 + 'px';
+                circle.style.opacity = String((20 - index) / 40);
+                circle.style.transform = `scale(${(20 - index) / 20})`;
+
+                const next = cursorCircles[index + 1] || cursorCircles[0];
+                x += (next.offsetLeft - x) * 0.3;
+                y += (next.offsetTop - y) * 0.3;
+            });
+
+            requestAnimationFrame(animateCircles);
+        }
+
+        animateCircles();
+    }
+
+    // ===================================
+    // Parallax Effect for Hero Orbs
+    // ===================================
+    const heroOrbs = document.querySelectorAll('.gradient-orb');
+
+    window.addEventListener('mousemove', (e) => {
+        const mouseX = e.clientX / window.innerWidth;
+        const mouseY = e.clientY / window.innerHeight;
+
+        heroOrbs.forEach((orb, index) => {
+            const speed = (index + 1) * 20;
+            const x = (mouseX - 0.5) * speed;
+            const y = (mouseY - 0.5) * speed;
+            orb.style.transform = `translate(${x}px, ${y}px)`;
+        });
+    });
+
+    // ===================================
+    // Page Load Fade In
+    // ===================================
+    window.addEventListener('load', () => {
+        document.body.style.opacity = '0';
+        setTimeout(() => {
+            document.body.style.transition = 'opacity 0.5s ease';
+            document.body.style.opacity = '1';
+        }, 50);
+    });
+
+    // ===================================
+    // Console Easter Egg
+    // ===================================
+    console.log('%c👋 Hello there!', 'font-size: 20px; font-weight: bold; color: #8B5CF6;');
+    console.log('%cInterested in the code? Check out: https://github.com/NavinSivakumar07', 'font-size: 14px; color: #3B82F6;');
+    console.log('%cLet\'s build something amazing together! 🚀', 'font-size: 14px; color: #EC4899;');
 });
-
-// Project cards hover effect
-projectCards.forEach(card => {
-    card.addEventListener('mouseenter', () => {
-        gsap.to(card, {
-            y: -10,
-            duration: 0.3,
-            ease: 'power2.out'
-        });
-    });
-    
-    card.addEventListener('mouseleave', () => {
-        gsap.to(card, {
-            y: 0,
-            duration: 0.3,
-            ease: 'power2.out'
-        });
-    });
-});
-
-// Skill items animation
-const skillItems = document.querySelectorAll('.skill-item');
-skillItems.forEach(item => {
-    item.addEventListener('mouseenter', () => {
-        gsap.to(item, {
-            scale: 1.1,
-            duration: 0.3,
-            ease: 'power2.out'
-        });
-    });
-    
-    item.addEventListener('mouseleave', () => {
-        gsap.to(item, {
-            scale: 1,
-            duration: 0.3,
-            ease: 'power2.out'
-        });
-    });
-});
-
-// Experience timeline animation
-const events = document.querySelectorAll('.event');
-events.forEach((event, index) => {
-    gsap.from(event, {
-        scrollTrigger: {
-            trigger: event,
-            start: 'top center+=100',
-            toggleActions: 'play none none reverse'
-        },
-        y: 50,
-        opacity: 0,
-        duration: 0.8,
-        delay: index * 0.2
-    });
-});
-
-// Contact section hover effects
-const contactItems = document.querySelectorAll('.contact-item');
-contactItems.forEach(item => {
-    item.addEventListener('mouseenter', () => {
-        gsap.to(item, {
-            x: 10,
-            duration: 0.3,
-            ease: 'power2.out'
-        });
-    });
-    
-    item.addEventListener('mouseleave', () => {
-        gsap.to(item, {
-            x: 0,
-            duration: 0.3,
-            ease: 'power2.out'
-        });
-    });
-});
-
-// CTA button animation
-const ctaButton = document.querySelector('.cta .btn');
-if (ctaButton) {
-    ctaButton.addEventListener('mouseenter', () => {
-        gsap.to(ctaButton, {
-            scale: 1.05,
-            duration: 0.3,
-            ease: 'power2.out'
-        });
-    });
-    
-    ctaButton.addEventListener('mouseleave', () => {
-        gsap.to(ctaButton, {
-            scale: 1,
-            duration: 0.3,
-            ease: 'power2.out'
-        });
-    });
-}
-
-// Add scroll reveal animation for sections
-const sections = document.querySelectorAll('section');
-sections.forEach(section => {
-    gsap.from(section, {
-        scrollTrigger: {
-            trigger: section,
-            start: 'top center+=100',
-            toggleActions: 'play none none reverse'
-        },
-        y: 50,
-        opacity: 0,
-        duration: 1
-    });
-});
-
-// Form submission handling
-const contactForm = document.querySelector('.contact-form');
-contactForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    // Get form data
-    const formData = new FormData(contactForm);
-    const data = Object.fromEntries(formData);
-    
-    // Here you would typically send the data to a server
-    console.log('Form submitted:', data);
-    
-    // Show success message
-    alert('Thank you for your message! I will get back to you soon.');
-    contactForm.reset();
-}); 
